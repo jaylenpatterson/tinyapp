@@ -48,19 +48,25 @@ app.post("/urls", (req, res) => {
 function generateRandomString() {
   const letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
   let randomArr = [];
-  for(let i = 0; i < 6; i++){
+  for (let i = 0; i < 6; i++) {
     randomArr.push(letters[Math.floor(26 * Math.random())])
   }
  return randomArr.join("")
 }
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL]
+  const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
+});
+
+app.post("/urls/:shortURL", (req, res) => {
+  let short = req.params.shortURL;
+  urlDatabase[short] = req.body.newURL;
+  res.redirect(`/urls/${short}`);
 });
 
