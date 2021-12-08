@@ -60,8 +60,9 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// Functions ...
 
-// checks if email exists in user data
+// checks if email exists in user data ////////////////
 
 let emailExists = function(email) {
   for (let objs in users) {
@@ -73,7 +74,7 @@ let emailExists = function(email) {
   }
 };
 
-// generates a random string of letters
+// generates a random string of letters  ///////////////////
 
 let randomString = function() {
   const letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
@@ -84,7 +85,7 @@ let randomString = function() {
   return randomArr.join("");
 };
 
-
+// post requests /////////////////////////////
 
 app.post("/register", (req, res) => {
   if (req.body.email === "" || req.body.password === "") {
@@ -106,15 +107,6 @@ app.post("/urls", (req, res) => {
   res.redirect("/urls");
 });
 
-
-
-
-
-app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
-});
-
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
@@ -125,10 +117,6 @@ app.post("/urls/:shortURL", (req, res) => {
   urlDatabase[short] = req.body.newURL;
   res.redirect(`/urls/${short}`);
 });
-
-
-
-
 
 app.post("/login", (req, res) => {
 
@@ -141,16 +129,18 @@ app.post("/logout", (req, res) => {
   res.redirect(`/urls`);
 });
 
+// Get requests ///////////////////////////
+
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+});
 
 
 
-
-
+// CODE ABOVE ME PLS o3o
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-
-
-// req.body
