@@ -19,7 +19,7 @@ const users = {
     email: "user2@example.com",
     password: "dishwasher-funk"
   }
-}
+};
 // url data
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -34,7 +34,7 @@ app.get("/", (req, res) => {
 // page rendering
 
 app.get("/register", (req, res) => {
-  const templateVars = { id: generateRandomString(), username: req.cookies["username"]};
+  const templateVars = { id: randomString, username: req.cookies["username"]};
   res.render("urls_register", templateVars);
 });
 
@@ -66,44 +66,43 @@ app.get("/urls/:shortURL", (req, res) => {
 let emailExists = function(email) {
   for (let objs in users) {
     if (users[objs]["email"] === email) {
-      return true
+      return true;
     } else {
-      return false
+      return false;
     }
   }
-}
+};
 
 // generates a random string of letters
 
-function generateRandomString() {
+let randomString = function() {
   const letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
   let randomArr = [];
   for (let i = 0; i < 6; i++) {
-    randomArr.push(letters[Math.floor(26 * Math.random())])
+    randomArr.push(letters[Math.floor(26 * Math.random())]);
   }
- return randomArr.join("")
-}
+  return randomArr.join("");
+};
 
 
 
 app.post("/register", (req, res) => {
   if (req.body.email === "" || req.body.password === "") {
     res.status(400);
-    return res.send("Please enter your email!")
+    return res.send("Please enter your email!");
   } else {
-    if(emailExists(req.body.email)){
+    if (emailExists(req.body.email)) {
       res.status(400);
       return res.send("Sorry! That email is already taken!");
     }
   }
-  let info = {id: generateRandomString(), email: req.body.email, password: req.body.password };
+  let info = {id: randomString, email: req.body.email, password: req.body.password };
   users[info.id] = info;
   res.redirect("/urls");
 });
 
 app.post("/urls", (req, res) => {
-  let randomStr = generateRandomString();
-  urlDatabase[randomStr] = req.body.longURL;
+  urlDatabase[randomString] = req.body.longURL;
   res.redirect("/urls");
 });
 
@@ -133,12 +132,12 @@ app.post("/urls/:shortURL", (req, res) => {
 
 app.post("/login", (req, res) => {
 
-  res.cookie('user_id', users  )
+  res.cookie('user_id', users);
   res.redirect(`/urls`);
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('user_id')
+  res.clearCookie('user_id');
   res.redirect(`/urls`);
 });
 
