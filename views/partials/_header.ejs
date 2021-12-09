@@ -9,15 +9,23 @@
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
-    
     </div>
-      <form action="/login" , method="post">
-        <button for ="/login" class="btn btn-primary">Login</button>
-      </form>
+      
+      <% if(userId !== undefined){ %>
+        <h4>Logged in as <%= userId %>!</h4>
+        <form action="/logout" , method="post">
+          <button type="submit" class="btn btn-danger">Logout</button>
+        </form>
+        <% } else { %>
+          <form action="/login" , method="post">
+            <button for="/login" class="btn btn-primary">Login</button>
+          </form>
+      
+          <form action="/register" , method="post">
+            <button for="/register" class="btn btn-primary">Register</button>
+          </form>
+          <% } %>
 
-      <form action="/register" , method="post">
-        <button for ="/register" class="btn btn-primary">Register</button>
-      </form>
   </nav>
 </header>
 
