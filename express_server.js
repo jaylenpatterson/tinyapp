@@ -60,18 +60,29 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+app.get("/urls_login", (req, res) => {
+ 
+  const templateVars = {users}
+  res.render("urls_login", templateVars);
+});
+
+app.get("/urls_register", (req, res) => {
+
+  const templateVars = {}
+  res.render("urls_register", templateVars);
+});
+
 // Functions ...
 
-// checks if email exists in user data ////////////////
+// returns true if an email exists. If it doesn't then returns false ////////////////
 
-let emailExists = function(email) {
+let keyExists = function(key) {
   for (let objs in users) {
-    if (users[objs]["email"] === email) {
-      return true;
-    } else {
-      return false;
+    if(users[objs].email === key || users[objs].password === key) {
+      return true
     }
   }
+  return false;
 };
 
 // generates a random string of letters  ///////////////////
@@ -87,20 +98,6 @@ let randomString = function() {
 
 // post requests /////////////////////////////
 
-app.post("/register", (req, res) => {
-  if (req.body.email === "" || req.body.password === "") {
-    res.status(400);
-    return res.send("Please enter your email!");
-  } else {
-    if (emailExists(req.body.email)) {
-      res.status(400);
-      return res.send("Sorry! That email is already taken!");
-    }
-  }
-  let info = {id: randomString, email: req.body.email, password: req.body.password };
-  users[info.id] = info;
-  res.redirect("/urls");
-});
 
 app.post("/urls", (req, res) => {
   urlDatabase[randomString] = req.body.longURL;
@@ -119,9 +116,48 @@ app.post("/urls/:shortURL", (req, res) => {
 });
 
 app.post("/login", (req, res) => {
+  res.redirect('/urls_login')
+});
 
-  res.cookie('user_id', users);
-  res.redirect(`/urls`);
+app.post("/loginWithEmail", (req, res) => {
+  const data = {
+      id: randomString(), 
+      email: req.body['email'], 
+      password: req.body['password'] 
+  }
+  const email = data.email;
+  const password = data.password;
+
+    if (keyExists(email) && keyExists(password)) {
+      // res.cookie("user_id")
+      console.log("email and password are valid!")
+      return res.redirect('/urls')
+    } 
+
+    if (keyExists(email) && !keyExists(password)) {
+      return res.send("403! Sorry, wrong password!")
+    }
+
+    if (!keyExists(email)) {
+      return res.send("403! Sorry, that email doesn't exist in our database!");
+    }
+  
+
+});
+
+app.post("/register", (req, res) => {
+  const email = req.body.email;
+
+  if (email === "" || req.body.password === "") {
+    return res.send("Error 400! Please enter an email!");
+  } 
+  if (keyExists(email)) {
+    return res.send("Error 400! That email is already taken!");
+  }
+  let info = {id: randomString(), email: req.body.email, password: req.body.password };
+  users[info.id] = info;
+  console.log(users)
+  res.redirect("/urls_register");
 });
 
 app.post("/logout", (req, res) => {
@@ -138,7 +174,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 
 
-// CODE ABOVE ME PLS o3o
+// CODE ABOVE ME PLS
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
