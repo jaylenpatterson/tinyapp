@@ -1,5 +1,6 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const app = express();
 const PORT = 8080;
@@ -12,12 +13,12 @@ const users = {
 	userRandomID: {
 		id: 'userRandomID',
 		email: 'user@example.com',
-		password: 'purple-monkey-dinosaur'
+		password: bcrypt.hashSync('purple-monkey-dinosaur', 10)
 	},
 	user2RandomID: {
 		id: 'user2RandomID',
 		email: 'user2@example.com',
-		password: 'dishwasher-funk'
+		password: bcrypt.hashSync('dishwasher-funk', 10)
 	}
 };
 // url data
@@ -200,15 +201,17 @@ app.post('/urls/:shortURL', (req, res) => {
 app.post('/login', (req, res) => {
 	const email = req.body['email'];
 	const password = req.body['password'];
+  const hashedPassword = bcrypt.hashSync(password, 10);
 
 	if (!emailExists(email)) {
 		return res.send("403! Sorry, that email doesn't exist in our database!");
 	}
 
 	for (let user in users) {
-		if (users[user].email === email && users[user].password === password) {
+		if (users[user].email === email && bcrypt.compareSync(password, hashedPassword)) {
 			res.cookie('user_id', users[user].id);
 			urlsForUser(users[user].id);
+      console.log(users)
 			return res.redirect('/urls');
 		}
 	}
@@ -219,6 +222,7 @@ app.post('/login', (req, res) => {
 app.post('/register', (req, res) => {
 	const email = req.body['email'];
 	const password = req.body['password'];
+  const hashedPassword = bcrypt.hashSync(password, 10);
 	const id = randomString();
 
 	if (email === '' || password === '') {
@@ -231,7 +235,7 @@ app.post('/register', (req, res) => {
 	users[id] = {
 		id: id,
 		email: email,
-		password: password
+		password: hashedPassword
 	};
 
 	res.cookie('user_id', id);
