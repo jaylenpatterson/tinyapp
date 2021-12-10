@@ -53,7 +53,7 @@ app.get('/register', (req, res) => {
 });
 
 app.get('/urls/new', (req, res) => {
-	const userId = req.session['user_id'];
+	const userId = req.cookies['user_id'];
 	const templateVars = { userId };
 	res.render('urls_new', templateVars);
 });
@@ -207,7 +207,8 @@ app.post('/login', (req, res) => {
 	const email = req.body['email'];
 	const password = req.body['password'];
 	const hashedPassword = bcrypt.hashSync(password, 10);
-	if (!getUserByEmail(email, users)) {
+
+	if (!emailExists(email)) {
 		return res.send("403! Sorry, that email doesn't exist in our database!");
 	}
 
