@@ -207,7 +207,7 @@ app.post('/login', (req, res) => {
 	const password = req.body['password'];
 	const hashedPassword = bcrypt.hashSync(password, 10);
 
-	if (!emailExists(email)) {
+	if (!getUserByEmail(email, users)) {
 		return res.send("403! Sorry, that email doesn't exist in our database!");
 	}
 
@@ -230,7 +230,7 @@ app.post('/register', (req, res) => {
 	if (email === '' || password === '') {
 		return res.send('Error 400! Please enter an email!');
 	}
-	if (emailExists(email)) {
+	if (!getUserByEmail(email, users)) {
 		return res.send('Error 400! That email is already taken!');
 	}
 
@@ -239,6 +239,7 @@ app.post('/register', (req, res) => {
 		email: email,
 		password: hashedPassword
 	};
+  console.log(users)
 	req.session['user_id'] = id;
 	res.redirect('/urls');
 });

@@ -28,4 +28,3 @@ const randomString = function() {
 
 module.exports = getUserByEmail;
 module.exports = urlsForUser;
-module.exports = randomString;
