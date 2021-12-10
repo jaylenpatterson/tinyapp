@@ -53,7 +53,7 @@ app.get('/register', (req, res) => {
 });
 
 app.get('/urls/new', (req, res) => {
-	const userId = req.cookies['user_id'];
+	const userId = req.session['user_id'];
 	const templateVars = { userId };
 	res.render('urls_new', templateVars);
 });
@@ -64,7 +64,6 @@ app.get('/urls.json', (req, res) => {
 
 app.get('/u/:shortURL', (req, res) => {
 	const longURL = urlDatabase[req.params.shortURL].longURL;
-
 	res.redirect(longURL);
 });
 
