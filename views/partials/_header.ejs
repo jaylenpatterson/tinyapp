@@ -16,7 +16,7 @@
     </div>
       
         <% if(userId != undefined){ %>
-        <h4>Logged in as <%= userId %>!</h4>
+        <h4>Logged in as <%= userEmail %>!</h4>
         <form action="/logout" , method="get">
           <button type="submit" class="btn btn-danger">Logout</button>
         </form>

@@ -59,7 +59,12 @@ app.get('/register', (req, res) => {
 
 app.get('/urls/new', (req, res) => {
 	const userId = req.session['user_id'];
-	const templateVars = { userId };
+	const userEmail = req.session['user_email']
+
+	const templateVars = { userId, userEmail };
+	if (userId === null) {
+		res.redirect('/login')
+	}
 	res.render('urls_new', templateVars);
 });
 
@@ -79,17 +84,27 @@ app.get('/logout', (req, res) => {
 
 app.get('/urls', (req, res) => {
 	const userId = req.session['user_id'];
-	const templateVars = { urls: urlsForUser(userId, urlDatabase), userId };
+	const userEmail = req.session['user_email'];
+	const templateVars = { urls: urlsForUser(userId, urlDatabase), userEmail, userId };
 	res.render('urls_index', templateVars);
 });
 
 app.get('/urls/:shortURL', (req, res) => {
 	const userId = req.session['user_id'];
+	const userEmail = req.session['user_email'];
+	const urls = urlsForUser(userId, urlDatabase)
+	const URL = req.params.shortURL
+	if(urls[URL] === undefined){
+		return res.send("Sorry! You don't have permission to view this page!")
+	}
 	const templateVars = { 
 		shortURL: req.params.shortURL, 
 		longURL: urlDatabase[req.params.shortURL].longURL, 
-		userId 
+		userId, 
+		userEmail
 	};
+
+
 	res.render('urls_show', templateVars);
 });
 
@@ -100,7 +115,7 @@ app.get('/login', (req, res) => {
 });
 
 app.get('/register', (req, res) => {
-	const templateVars = { userId: null };
+	const templateVars = { userId: null};
 	res.render('urls_register', templateVars);
 });
 
@@ -160,7 +175,7 @@ app.post('/urls', (req, res) => {
 	const userId = req.session['user_id'];
 	const data = {
 		longURL: req.body.longURL,
-		userID: userId
+		userID: userId,
 	};
 
 	urlDatabase[randomString()] = data;
@@ -212,6 +227,8 @@ app.post('/login', (req, res) => {
 	for (let user in users) {
 		if (users[user].email === email && bcrypt.compareSync(password, hashedPassword)) {
 			req.session.user_id = users[user].id;
+			req.session.user_email = email
+			
 			urlsForUser(users[user].id, urlDatabase);
 			return res.redirect('/urls');
 		}
